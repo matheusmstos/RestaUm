@@ -3,13 +3,11 @@
 
 #include <QPushButton>
 
-class Peca : public QPushButton
-{
+class Peca : public QPushButton {
     Q_OBJECT
-    Q_ENUMS(Type)
 
 public:
-    enum Type {
+    enum State {
         Empty,
         Filled,
         Selected,
@@ -17,13 +15,22 @@ public:
     };
 
     explicit Peca(QWidget *parent = 0);
+    ~Peca();
 
 signals:
+    void stateChanged(Peca::State state);
 
 public slots:
+    void setState(Peca::State state);
+    Peca::State getState();
+    int getX();
+    int getY();
+    void setX(int n);
+    void setY(int n);
 
 private:
-    Peca::Type m_type;
+    Peca::State m_state;
+    int x, y;
 
 private slots:
     void updateIcon();

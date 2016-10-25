@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2016-10-04T17:07:43
+# Project created by QtCreator 2016-10-04T17:07:31
 #
 #-------------------------------------------------
 
@@ -19,7 +19,7 @@ SOURCES += main.cpp\
 HEADERS  += RestaUm.h \
     Peca.h
 
-FORMS    += restaum.ui
+FORMS    += RestaUm.ui
 
 RESOURCES += \
     restaum.qrc
