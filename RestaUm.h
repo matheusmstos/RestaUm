@@ -21,6 +21,7 @@ signals:
 private:
     Ui::RestaUm *ui;
     Peca* m_pecas[7][7];
+    bool direcoes[3];
 
 private slots:
     void play();
@@ -28,8 +29,9 @@ private slots:
     void mostrarFimJogo(int n);
     void trocarModo(QAction* modo);
     void desenharTabuleiro();
-    bool movimentoPossivel(int r, int c);
-
+    void checandoMovimentos(int r, int c);
+    bool movimentoPossivel(int r, int c, int direcao);
+    void comivel(int r, int c);
 };
 
 #endif // RESTAUM_H
