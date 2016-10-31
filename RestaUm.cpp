@@ -21,6 +21,8 @@ RestaUm::RestaUm(QWidget *parent) :
     group->addAction(ui->actionPiramide);
     group->addAction(ui->actionLosango);
 
+
+
     for (int r = 0; r < 7; r++) {
         for (int c = 0; c < 7; c++) {
             m_pecas[r][c] =
@@ -35,22 +37,19 @@ RestaUm::RestaUm(QWidget *parent) :
                   SIGNAL(clicked()),
                   this,
                   SLOT(play()));
-          }
+
+                m_pecas[r][c]->setState(Peca::Filled);
+            }
+        }
     }
-}
-    desenharTabuleiro();
+
+    m_pecas[3][3]->setState(Peca::Empty);
 
     QObject::connect(
         group,
         SIGNAL(triggered(QAction*)),
         this,
         SLOT(trocarModo(QAction*)));
-
-    QObject::connect(
-                ui->actionNovo,
-                SIGNAL(triggered()),
-                qApp,
-                SLOT(novoJogo()));
 
     QObject::connect(
         ui->actionSair,
@@ -66,9 +65,9 @@ RestaUm::RestaUm(QWidget *parent) :
 
     QObject::connect(
         this,
-        SIGNAL(gameOver(int)),
+        SIGNAL(gameOver()),
         this,
-        SLOT(mostrarFimJogo(int)));
+        SLOT(mostrarFimJogo()));
 
     this->adjustSize();
     this->setFixedSize(this->size());
@@ -80,119 +79,83 @@ RestaUm::~RestaUm() {
 
 void RestaUm::play() {
     Peca* peca = qobject_cast<Peca*>(
-                QObject::sender());
-
-    direcoes[0] = direcoes[1] = direcoes[2] = direcoes[3] = false;
-    // 0 CIMA
-    // 1 DIREITA
-    // 2 BAIXO
-    // 3 ESQUERDA
-
+                QObject::sender());    
     int r = peca->getX();
     int c = peca->getY();
+    static int estado = 1;
 
-    if(m_pecas[r][c]->getState() == Peca::State::Filled) {
-        //checandoMovimentos(r, c);
-        comivel(r,c);
+    switch(estado){
+        case 1:
+            minha_lista.clear();
+            srMoves(r, c);
 
-            if(direcoes[0] == true){
-                m_pecas[r-2][c]->setState(Peca::Filled);
-                m_pecas[r-1][c]->setState(Peca::Empty);
-                peca->setState(Peca::Empty);
+            if(minha_lista.size() == 1){
+                exMoves(r, c, minha_lista.front()->getX(), minha_lista.front()->getY());
             }
+            else if(minha_lista.size() > 1) {
+                this->newPeca = peca;
+                newPeca->setState(Peca::Selected);
+                foreach (Peca *p, minha_lista) {
+                    p->setState(Peca::Jumpable);
+                }
 
+                estado = 2;
+            }
+            break;
+
+        case 2:
+
+                if(minha_lista.contains(peca)) {
+                    exMoves(newPeca->getX(), newPeca->getY(), peca->getX(), peca->getY());
+                }
+
+                foreach (Peca *p, minha_lista) {
+                    if(p->getState() == Peca::Jumpable){
+                        p->setState(Peca::Empty);
+                    }
+
+                }
+                   estado = 1;
+            break;
+
+        default:
+            break;
     }
-
-//    if(direcoes[1]) {
-//        peca->setState(Peca::Empty);
-//    }
-
-//    if (peca == ui->peca54) {
-//        emit gameOver(1);
-//    } else {
-//        m_pecas[3][3]->setState(Peca::Filled);
-//        peca->setState(Peca::Empty);
-//    }
 
 }
 
-void RestaUm::comivel(int r, int c){
-    if(r - 2 < 0 ){
-         qDebug() << "Limite ultrapassado pra cima";
-    }else{
-
-        if(m_pecas[r-1][c]->getState() == Peca::State::Filled) {
-            qDebug() << "Peça comivel pra cima";
-            if(m_pecas[r-2][c]->getState() == Peca::State::Empty){
-                qDebug() << "Peça ocupavel pra cima";
-                direcoes[0] = true;
-
-            }
-        }
+void RestaUm::srMoves(int r, int c){
+    if((r-2) >= 0 && m_pecas[r-1][c] && m_pecas[r-2][c]
+            && m_pecas[r-1][c]->getState() == Peca::Filled
+            && m_pecas[r-2][c]->getState() == Peca::Empty){
+        minha_lista << m_pecas[r-2][c];
     }
 
-    if(c + 2 > 6){
-        qDebug() << "Limite ultrapassado pra direita";
-    }else{
-     qDebug() << "Peça comivel pra direita";
+    if((r+2) <= 6 && m_pecas[r+1][c] && m_pecas[r+2][c]
+            && m_pecas[r+1][c]->getState() == Peca::Filled
+            && m_pecas[r+2][c]->getState() == Peca::Empty){
+        minha_lista << m_pecas[r+2][c];
     }
 
-     if(r + 2 > 6){
-         qDebug() << "Limite ultrapassado pra baixo";
-     }else{
-      qDebug() << "Peça comivel pra a baixo";
-     }
+    if((c-2) >= 0 && m_pecas[r][c-1] && m_pecas[r][c-2]
+            && m_pecas[r][c-1]->getState() == Peca::Filled
+            && m_pecas[r][c-2]->getState() == Peca::Empty){
+        minha_lista << m_pecas[r][c-2];
+    }
 
-      if(c - 2 < 0){
-          qDebug() << "Limite ultrapassado pra esquerda";
-      }else{
-       qDebug() << "Peça comivel pra esquerda";
-      }
+    if((c+2) <= 6 && m_pecas[r][c+1] && m_pecas[r][c+2]
+            && m_pecas[r][c+1]->getState() == Peca::Filled
+            && m_pecas[r][c+2]->getState() == Peca::Empty){
+        minha_lista << m_pecas[r][c+2];
+    }
 
 }
 
-void RestaUm::checandoMovimentos(int r, int c) {
-            if(movimentoPossivel(r - 1, c, 0)) { // CIMA
-                direcoes[0] = true;
-            }
-            if(movimentoPossivel(r, c + 1, 1)) { // DIREITA
-                direcoes[1] = true;
-            }
-            if(movimentoPossivel(r + 1, c, 2)) { // BAIXO
-                direcoes[2] = true;
-            }
-            if(movimentoPossivel(r, c - 1, 3)) { // ESQUERDA
-                direcoes[3] = true;
-            }
-}
+void RestaUm::exMoves(int rp, int cp, int rl, int cl){
+        m_pecas[rl][cl]->setState(Peca::Filled);
+        m_pecas[(rl+rp)/2][(cl+cp)/2]->setState(Peca::Empty);
+        m_pecas[rp][cp]->setState(Peca::Empty);
 
-bool RestaUm::movimentoPossivel(int r, int c, int direcao) {
-    if(m_pecas[r][c]->getState() == Peca::State::Empty) {
-        return false;
-    }
-
-    switch(direcao) {
-    case 0: // CIMA
-        if(m_pecas[r-1][c]->getState() == Peca::State::Empty) {
-            direcoes[0] = true;
-        }
-        break;
-    case 1:
-        if(m_pecas[r][c+1]->getState() == Peca::State::Empty) {
-            direcoes[1] = true;
-        }
-        break;
-    case 2:
-        if(m_pecas[r+1][c]->getState() == Peca::State::Empty) {
-            direcoes[2] = true;
-        }
-        break;
-    case 3:
-        if(m_pecas[r][c-1]->getState() == Peca::State::Empty) {
-            direcoes[3] = true;
-        }
-        break;
-    }
 }
 
 void RestaUm::mostrarSobre() {
@@ -201,16 +164,10 @@ void RestaUm::mostrarSobre() {
        tr("Resta Um\n\nAndrei Rimsa Alvares - andrei@decom.cefetmg.br"));
 }
 
-void RestaUm::mostrarFimJogo(int n) {
-    if (n == 1) {
-        QMessageBox::information(this,
-           tr("Fim"),
-           tr("Parabéns, você venceu!"));
-    } else {
-        QMessageBox::information(this,
-           tr("Fim"),
-           tr("Parabéns, você perdeu!"));
-    }
+void RestaUm::mostrarFimJogo() {
+    QMessageBox::information(this,
+       tr("Fim"),
+       tr("Parabéns, você venceu!"));
 }
 
 
@@ -231,14 +188,10 @@ void RestaUm::trocarModo(QAction* modo) {
         qDebug() << "modo: losango";
 }
 
-void RestaUm::desenharTabuleiro() {
-    for (int r = 0; r < 7; r++) {
-        for (int c = 0; c < 7; c++) {
-            if (m_pecas[r][c]) {
-                m_pecas[r][c]->setState(Peca::Filled);
-            }
-        }
-    }
+int RestaUm::getNpecas() {
+    return nPecas;
+}
 
-    m_pecas[3][3]->setState(Peca::Empty);
+void RestaUm::setNpecas(int nPecas) {
+    this->nPecas = nPecas;
 }

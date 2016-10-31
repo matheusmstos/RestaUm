@@ -34,6 +34,7 @@ private:
 
 private slots:
     void updateIcon();
+
 };
 
 #endif // PECA_H

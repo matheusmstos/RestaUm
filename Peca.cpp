@@ -18,7 +18,6 @@ void Peca::setState(Peca::State state) {
     }
 }
 
-
 void Peca::updateIcon() {
     switch (m_state) {
         case Peca::Empty:
@@ -40,11 +39,11 @@ Peca::State Peca::getState() {
     return m_state;
 }
 
-int Peca::getX() {
+int Peca::getX(){
     return this->x;
 }
 
-int Peca::getY() {
+int Peca::getY(){
     return this->y;
 }
 

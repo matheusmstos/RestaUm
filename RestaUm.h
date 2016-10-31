@@ -14,24 +14,27 @@ class RestaUm : public QMainWindow {
 public:
     explicit RestaUm(QWidget *parent = 0);
     ~RestaUm();
+    void srMoves(int r, int c);
+    void exMoves(int rp, int cp, int rl, int cl);
+    QList<Peca*> minha_lista;
+
 
 signals:
-    void gameOver(int n);
+    void gameOver();
 
 private:
     Ui::RestaUm *ui;
     Peca* m_pecas[7][7];
-    bool direcoes[3];
+    Peca* newPeca;
+    int nPecas;
 
 private slots:
     void play();
     void mostrarSobre();
-    void mostrarFimJogo(int n);
+    void mostrarFimJogo();
     void trocarModo(QAction* modo);
-    void desenharTabuleiro();
-    void checandoMovimentos(int r, int c);
-    bool movimentoPossivel(int r, int c, int direcao);
-    void comivel(int r, int c);
+    int getNpecas();
+    void setNpecas(int nPecas);
 };
 
 #endif // RESTAUM_H
