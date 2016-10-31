@@ -174,8 +174,10 @@ void RestaUm::mostrarFimJogo() {
 void RestaUm::trocarModo(QAction* modo) {
     if (modo == ui->actionTradicional)
         qDebug() << "modo: tradicional";
-    else if (modo == ui->actionCruz)
+    else if (modo == ui->actionCruz){
         qDebug() << "modo: cruz";
+        Cruz();
+    }
     else if (modo == ui->actionMais)
         qDebug() << "modo: mais";
     else if (modo == ui->actionBanquinho)
@@ -186,6 +188,24 @@ void RestaUm::trocarModo(QAction* modo) {
         qDebug() << "modo: piramide";
     else if (modo == ui->actionLosango)
         qDebug() << "modo: losango";
+}
+
+void RestaUm::Cruz(){
+    qDebug() << "Que saco";
+        for (int r = 0; r < 7; r++) {
+            for (int c = 0; c < 7; c++) {
+                if(m_pecas[r][c])
+                m_pecas[r][c]->setState(Peca::Empty);
+            }
+        }
+        qDebug() << "ola amigos";
+
+        m_pecas[1][3]->setState(Peca::Filled);
+        m_pecas[2][3]->setState(Peca::Filled);
+        m_pecas[3][3]->setState(Peca::Filled);
+        m_pecas[4][3]->setState(Peca::Filled);
+        m_pecas[2][2]->setState(Peca::Filled);
+        m_pecas[2][4]->setState(Peca::Filled);
 }
 
 int RestaUm::getNpecas() {

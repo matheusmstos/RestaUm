@@ -17,6 +17,7 @@ public:
     void srMoves(int r, int c);
     void exMoves(int rp, int cp, int rl, int cl);
     QList<Peca*> minha_lista;
+    void Cruz();
 
 
 signals:
