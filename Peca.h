@@ -11,7 +11,7 @@ public:
         Empty,
         Filled,
         Selected,
-        Jumpable
+        Jumpable,
     };
 
     explicit Peca(QWidget *parent = 0);

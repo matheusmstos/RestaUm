@@ -20,18 +20,18 @@ void Peca::setState(Peca::State state) {
 
 void Peca::updateIcon() {
     switch (m_state) {
-        case Peca::Empty:
-            this->setIcon(QPixmap(":/empty"));
-            break;
-        case Peca::Filled:
-            this->setIcon(QPixmap(":/filled"));
-            break;
-        case Peca::Selected:
-            this->setIcon(QPixmap(":/selected"));
-            break;
-        case Peca::Jumpable:
-            this->setIcon(QPixmap(":/jumpable"));
-            break;
+    case Peca::Empty:
+        this->setIcon(QPixmap(":/empty"));
+        break;
+    case Peca::Filled:
+        this->setIcon(QPixmap(":/filled"));
+        break;
+    case Peca::Selected:
+        this->setIcon(QPixmap(":/selected"));
+        break;
+    case Peca::Jumpable:
+        this->setIcon(QPixmap(":/jumpable"));
+        break;
     }
 }
 

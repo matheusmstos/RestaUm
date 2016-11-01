@@ -876,8 +876,15 @@
     </property>
     <addaction name="actionSobre"/>
    </widget>
+   <widget class="QMenu" name="menuSegredo">
+    <property name="title">
+     <string>Segredo</string>
+    </property>
+    <addaction name="actionNyan"/>
+   </widget>
    <addaction name="menuArquivo"/>
    <addaction name="menuModo"/>
+   <addaction name="menuSegredo"/>
    <addaction name="menuAjuda"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -953,6 +960,11 @@
   <action name="actionSobre">
    <property name="text">
     <string>Sobre</string>
+   </property>
+  </action>
+  <action name="actionNyan">
+   <property name="text">
+    <string>Modo Nyan</string>
    </property>
   </action>
  </widget>

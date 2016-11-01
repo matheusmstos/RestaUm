@@ -4,6 +4,9 @@
 #include <QDebug>
 #include <QActionGroup>
 #include <QMessageBox>
+#include <QMediaPlayer>
+#include <QSoundEffect>
+#include <QFile>
 
 RestaUm::RestaUm(QWidget *parent) :
     QMainWindow(parent),
@@ -21,6 +24,7 @@ RestaUm::RestaUm(QWidget *parent) :
     group->addAction(ui->actionPiramide);
     group->addAction(ui->actionLosango);
 
+    nyanAtivado = 0;
     nPecas = 32;
     for (int r = 0; r < 7; r++) {
         for (int c = 0; c < 7; c++) {
@@ -68,6 +72,11 @@ RestaUm::RestaUm(QWidget *parent) :
                 SIGNAL(triggered()),
                 this,
                 SLOT(JogoNovo()));
+    QObject::connect(
+                ui->actionNyan,
+                SIGNAL(triggered()),
+                this,
+                SLOT(playNyan()));
 
     QObject::connect(
                 this,
@@ -102,8 +111,14 @@ void RestaUm::play() {
         else if(minha_lista.size() > 1) {
             this->newPeca = peca;
             newPeca->setState(Peca::Selected);
+            if(nyanAtivado) {
+                newPeca->setIcon(QPixmap(":/nyan_selected"));
+            }
             foreach (Peca *p, minha_lista) {
                 p->setState(Peca::Jumpable);
+                if(nyanAtivado) {
+                    p->setIcon(QPixmap(":/nyan_jumpable"));
+                }
             }
 
             estado = 2;
@@ -120,6 +135,9 @@ void RestaUm::play() {
             foreach (Peca *p, minha_lista) {
                 if(p->getState() == Peca::Jumpable){
                     p->setState(Peca::Empty);
+                    if(nyanAtivado) {
+                        p->setIcon(QPixmap(":/nyan_empty"));
+                    }
                 }
 
             }
@@ -133,7 +151,7 @@ void RestaUm::play() {
 
     atualizarStatusBar();
 
-    if(estado == 1 && !verificaSeHaJogadas() && nPecas != 1) {
+    if(estado == 1 && !verificaSeHaJogadas()) {
         emit gameOver();
     }
 
@@ -169,10 +187,15 @@ void RestaUm::srMoves(int r, int c){
 }
 
 void RestaUm::exMoves(int rp, int cp, int rl, int cl){
-    m_pecas[rl][cl]->setState(Peca::Filled);
-    m_pecas[(rl+rp)/2][(cl+cp)/2]->setState(Peca::Empty);
-    m_pecas[rp][cp]->setState(Peca::Empty);
+        m_pecas[rl][cl]->setState(Peca::Filled);
+        m_pecas[(rl+rp)/2][(cl+cp)/2]->setState(Peca::Empty);
+        m_pecas[rp][cp]->setState(Peca::Empty);
 
+    if(nyanAtivado) {
+        m_pecas[rl][cl]->setIcon(QPixmap(":/nyan_filled"));
+        m_pecas[(rl+rp)/2][(cl+cp)/2]->setIcon(QPixmap(":/nyan_empty"));
+        m_pecas[rp][cp]->setIcon(QPixmap(":/nyan_empty"));
+    }
 }
 
 void RestaUm::mostrarSobre() {
@@ -186,15 +209,29 @@ void RestaUm::mostrarFimJogo() {
     if(nPecas != 1)
         QMessageBox::information(this,
                                  tr("Fim"),
-                                 tr("Você perdeu, otário!"));
+                                 tr("Poxa, você perdeu! 😭😥"));
     else {
         QMessageBox::information(this,
                                  tr("Fim"),
-                                 tr("Parabéns, você ganhou!"));
+                                 tr("Parabéns, você ganhou! 🔝👌😱"));
     }
     JogoNovo();
 }
 
+void RestaUm::playNyan() {
+    nyanAtivado = 1;
+//    if(QFile::exists(":/nyan")) {
+//        qDebug() << "Existe";
+//    } else {
+//        qDebug() << "Não existe";
+//    }
+//    QSoundEffect effect;
+//    effect.setSource(QUrl::fromLocalFile(":/nyan"));
+//    effect.setLoopCount(5);
+//    effect.setVolume(0.75f);
+//    effect.play();
+    Nyanficar();
+}
 
 void RestaUm::trocarModo(QAction* modo) {
     if (modo == ui->actionTradicional) {
@@ -224,6 +261,10 @@ void RestaUm::trocarModo(QAction* modo) {
     else if (modo == ui->actionLosango) {
         Losango();
         atualizarStatusBar();
+    }
+
+    if(nyanAtivado) {
+        Nyanficar();
     }
 }
 
@@ -263,6 +304,42 @@ void RestaUm::Mais(){
     m_pecas[4][3]->setState(Peca::Filled);
     m_pecas[5][3]->setState(Peca::Filled);
 
+}
+
+void RestaUm::Nyanficar() {
+    for (int r = 0; r < 7; r++) {
+        for (int c = 0; c < 7; c++) {
+            if(m_pecas[r][c] && m_pecas[r][c]->getState() == Peca::Filled)
+               m_pecas[r][c]->setIcon(QPixmap(":/nyan_filled"));
+            if(m_pecas[r][c] && m_pecas[r][c]->getState() == Peca::Empty) {
+                m_pecas[r][c]->setIcon(QPixmap(":/nyan_empty"));
+            }
+            if(m_pecas[r][c] && m_pecas[r][c]->getState() == Peca::Selected) {
+                m_pecas[r][c]->setIcon(QPixmap(":/nyan_selected"));
+            }
+            if(m_pecas[r][c] && m_pecas[r][c]->getState() == Peca::Jumpable) {
+                m_pecas[r][c]->setIcon(QPixmap(":/nyan_jumpable"));
+            }
+        }
+    }
+}
+
+void RestaUm::Desnyanficar() {
+    for (int r = 0; r < 7; r++) {
+        for (int c = 0; c < 7; c++) {
+            if(m_pecas[r][c] && m_pecas[r][c]->getState() == Peca::Filled)
+               m_pecas[r][c]->setIcon(QPixmap(":/filled"));
+            if(m_pecas[r][c] && m_pecas[r][c]->getState() == Peca::Empty) {
+                m_pecas[r][c]->setIcon(QPixmap(":/empty"));
+            }
+            if(m_pecas[r][c] && m_pecas[r][c]->getState() == Peca::Selected) {
+                m_pecas[r][c]->setIcon(QPixmap(":/selected"));
+            }
+            if(m_pecas[r][c] && m_pecas[r][c]->getState() == Peca::Jumpable) {
+                m_pecas[r][c]->setIcon(QPixmap(":/jumpable"));
+            }
+        }
+    }
 }
 
 void RestaUm::Banquinho(){
@@ -403,6 +480,7 @@ void RestaUm::atualizarStatusBar(){
 }
 
 void RestaUm::JogoNovo() {
+    nyanAtivado = 0;
     if (ui->actionTradicional->isChecked())
         Tradicional();
     else if (ui->actionCruz->isChecked())
@@ -417,6 +495,7 @@ void RestaUm::JogoNovo() {
         Piramide();
     else if (ui->actionLosango->isChecked())
         Losango();
+    Desnyanficar();
     atualizarStatusBar();
 }
 

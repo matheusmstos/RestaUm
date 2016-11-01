@@ -4,5 +4,9 @@
         <file alias="filled">images/filled.png</file>
         <file alias="jumpable">images/jumpable.png</file>
         <file alias="selected">images/selected.png</file>
+        <file alias="nyan_empty">images/nyan/nyan_empty.png</file>
+        <file alias="nyan_filled">images/nyan/nyan_filled.png</file>
+        <file alias="nyan_jumpable">images/nyan/nyan_jumpable.png</file>
+        <file alias="nyan_selected">images/nyan/nyan_selected.png</file>
     </qresource>
 </RCC>

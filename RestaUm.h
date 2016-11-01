@@ -34,6 +34,7 @@ private:
     Peca* m_pecas[7][7];
     Peca* newPeca;
     int nPecas;
+    int nyanAtivado;
 
 private slots:
     void play();
@@ -44,6 +45,9 @@ private slots:
     void setNpecas(int nPecas);
     bool verificaSeHaJogadas();
     void JogoNovo();
+    void playNyan();
+    void Nyanficar();
+    void Desnyanficar();
 };
 
 #endif // RESTAUM_H
