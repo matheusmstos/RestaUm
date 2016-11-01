@@ -7,6 +7,8 @@
 #include <QMediaPlayer>
 #include <QSoundEffect>
 #include <QFile>
+#include <QShortcut>
+#include <QDesktopServices>
 
 RestaUm::RestaUm(QWidget *parent) :
     QMainWindow(parent),
@@ -77,6 +79,11 @@ RestaUm::RestaUm(QWidget *parent) :
                 SIGNAL(triggered()),
                 this,
                 SLOT(playNyan()));
+    QObject::connect(
+                ui->actionPontosExtras,
+                SIGNAL(triggered()),
+                this,
+                SLOT(pontosExtras()));
 
     QObject::connect(
                 this,
@@ -231,6 +238,11 @@ void RestaUm::playNyan() {
 //    effect.setVolume(0.75f);
 //    effect.play();
     Nyanficar();
+}
+
+void RestaUm::pontosExtras() {
+    QString link = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+    QDesktopServices::openUrl(QUrl(link));
 }
 
 void RestaUm::trocarModo(QAction* modo) {

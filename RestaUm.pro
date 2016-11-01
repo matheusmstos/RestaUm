@@ -12,7 +12,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = RestaUm
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
         RestaUm.cpp \
     Peca.cpp
@@ -24,3 +23,5 @@ FORMS    += RestaUm.ui
 
 RESOURCES += \
     restaum.qrc
+
+ICON = icon.icns

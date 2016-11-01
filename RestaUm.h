@@ -48,6 +48,7 @@ private slots:
     void playNyan();
     void Nyanficar();
     void Desnyanficar();
+    void pontosExtras();
 };
 
 #endif // RESTAUM_H

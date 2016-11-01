@@ -881,6 +881,7 @@
      <string>Segredo</string>
     </property>
     <addaction name="actionNyan"/>
+    <addaction name="actionPontosExtras"/>
    </widget>
    <addaction name="menuArquivo"/>
    <addaction name="menuModo"/>
@@ -965,6 +966,11 @@
   <action name="actionNyan">
    <property name="text">
     <string>Modo Nyan</string>
+   </property>
+  </action>
+  <action name="actionPontosExtras">
+   <property name="text">
+    <string>Pontos Extras</string>
    </property>
   </action>
  </widget>
