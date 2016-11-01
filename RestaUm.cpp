@@ -98,7 +98,6 @@ void RestaUm::play() {
         if(minha_lista.size() == 1){
             exMoves(r, c, minha_lista.front()->getX(), minha_lista.front()->getY());
             nPecas--;
-            atualizarStatusBar();
         }
         else if(minha_lista.size() > 1) {
             this->newPeca = peca;
@@ -131,6 +130,8 @@ void RestaUm::play() {
     default:
         break;
     }
+
+    atualizarStatusBar();
 
     if(estado == 1 && !verificaSeHaJogadas() && nPecas != 1) {
         emit gameOver();
@@ -177,7 +178,8 @@ void RestaUm::exMoves(int rp, int cp, int rl, int cl){
 void RestaUm::mostrarSobre() {
     QMessageBox::information(this,
                              tr("Sobre"),
-                             tr("Resta Um\n\nAndrei Rimsa Alvares - andrei@decom.cefetmg.br"));
+                             tr("Resta Um\n\nPedro Guimarães - moisespedro15@gmail.com\n"
+                                "Matheus Santos - matheusmstos@yahoo.com.br"));
 }
 
 void RestaUm::mostrarFimJogo() {
@@ -195,36 +197,30 @@ void RestaUm::mostrarFimJogo() {
 
 void RestaUm::trocarModo(QAction* modo) {
     if (modo == ui->actionTradicional) {
-        qDebug() << "modo: tradicional";
         Tradicional();
+        atualizarStatusBar();
     }
     else if (modo == ui->actionCruz){
-        qDebug() << "modo: cruz";
         Cruz();
         atualizarStatusBar();
     }
     else if (modo == ui->actionMais) {
-        qDebug() << "modo: mais";
         Mais();
         atualizarStatusBar();
     }
     else if (modo == ui->actionBanquinho) {
-        qDebug() << "modo: banquinho";
         Banquinho();
         atualizarStatusBar();
     }
     else if (modo == ui->actionFlecha) {
-        qDebug() << "modo: flecha";
         Flecha();
         atualizarStatusBar();
     }
     else if (modo == ui->actionPiramide) {
-        qDebug() << "modo: piramide";
         Piramide();
         atualizarStatusBar();
     }
     else if (modo == ui->actionLosango) {
-        qDebug() << "modo: losango";
         Losango();
         atualizarStatusBar();
     }
