@@ -25,7 +25,6 @@ public:
     void Losango();
     void Tradicional();
     void atualizarStatusBar();
-
 signals:
     void gameOver();
 
@@ -49,6 +48,7 @@ private slots:
     void Nyanficar();
     void Desnyanficar();
     void pontosExtras();
+    void naoClique();
 };
 
 #endif // RESTAUM_H

@@ -882,6 +882,7 @@
     </property>
     <addaction name="actionNyan"/>
     <addaction name="actionPontosExtras"/>
+    <addaction name="actionNao_Clique_Aqui"/>
    </widget>
    <addaction name="menuArquivo"/>
    <addaction name="menuModo"/>
@@ -971,6 +972,11 @@
   <action name="actionPontosExtras">
    <property name="text">
     <string>Pontos Extras</string>
+   </property>
+  </action>
+  <action name="actionNao_Clique_Aqui">
+   <property name="text">
+    <string>Nao Clique Aqui</string>
    </property>
   </action>
  </widget>

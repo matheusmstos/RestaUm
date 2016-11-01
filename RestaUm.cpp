@@ -86,6 +86,12 @@ RestaUm::RestaUm(QWidget *parent) :
                 SLOT(pontosExtras()));
 
     QObject::connect(
+                ui->actionNao_Clique_Aqui,
+                SIGNAL(triggered()),
+                this,
+                SLOT(naoClique()));
+
+    QObject::connect(
                 this,
                 SIGNAL(gameOver()),
                 this,
@@ -243,6 +249,51 @@ void RestaUm::playNyan() {
 void RestaUm::pontosExtras() {
     QString link = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
     QDesktopServices::openUrl(QUrl(link));
+}
+
+void RestaUm::naoClique() {
+    QMessageBox::information(this,
+                             tr("Nossa"),
+                             tr("Falei pra não clicar aqui."));
+    QMessageBox::information(this,
+                             tr("Meu deus"),
+                             tr("Voce não aprende mesmo."));
+    QMessageBox::information(this,
+                             tr("Bem feito"),
+                             tr("Quem mandou ser teimoso."));
+    QMessageBox::information(this,
+                             tr("Nervoso?"),
+                             tr("Aposto que já está arrependido."));
+    QMessageBox::information(this,
+                             tr("Irritado?"),
+                             tr("Calma, só faltam mais algumas."));
+    QMessageBox::information(this,
+                             tr("Chateado?"),
+                             tr("Isso é bem irritante, né?"));
+    QMessageBox::information(this,
+                             tr(""),
+                             tr("Quem mandou ficar fuçando no menu em vez de jogar?"));
+    QMessageBox::information(this,
+                             tr(""),
+                             tr("Quando será que isso acaba?"));
+    QMessageBox::information(this,
+                             tr(""),
+                             tr("Agora?"));
+    QMessageBox::information(this,
+                             tr(""),
+                             tr("Ainda não?"));
+    for(int i = 0; i < 10; i++) {
+        QMessageBox::information(this,
+                                 tr(""),
+                                 tr("Não"));
+    }
+    QMessageBox::information(this,
+                             tr(""),
+                             tr("Tá quase!"));
+    QMessageBox::information(this,
+                             tr(""),
+                             tr("Tchau!"));
+
 }
 
 void RestaUm::trocarModo(QAction* modo) {
