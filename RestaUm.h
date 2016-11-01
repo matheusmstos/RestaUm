@@ -42,6 +42,8 @@ private slots:
     void trocarModo(QAction* modo);
     int getNpecas();
     void setNpecas(int nPecas);
+    bool verificaSeHaJogadas();
+    void JogoNovo();
 };
 
 #endif // RESTAUM_H

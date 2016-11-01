@@ -25,17 +25,17 @@ RestaUm::RestaUm(QWidget *parent) :
     for (int r = 0; r < 7; r++) {
         for (int c = 0; c < 7; c++) {
             m_pecas[r][c] =
-              this->findChild<Peca*>(
-                QString("peca%1%2").arg(r).arg(c));
+                    this->findChild<Peca*>(
+                        QString("peca%1%2").arg(r).arg(c));
             if (m_pecas[r][c]) {
                 m_pecas[r][c]->setX(r);
                 m_pecas[r][c]->setY(c);
 
                 QObject::connect(
-                  m_pecas[r][c],
-                  SIGNAL(clicked()),
-                  this,
-                  SLOT(play()));
+                            m_pecas[r][c],
+                            SIGNAL(clicked()),
+                            this,
+                            SLOT(play()));
 
                 m_pecas[r][c]->setState(Peca::Filled);
             }
@@ -47,28 +47,33 @@ RestaUm::RestaUm(QWidget *parent) :
     atualizarStatusBar();
 
     QObject::connect(
-        group,
-        SIGNAL(triggered(QAction*)),
-        this,
-        SLOT(trocarModo(QAction*)));
+                group,
+                SIGNAL(triggered(QAction*)),
+                this,
+                SLOT(trocarModo(QAction*)));
 
     QObject::connect(
-        ui->actionSair,
-        SIGNAL(triggered()),
-        qApp,
-        SLOT(quit()));
+                ui->actionSair,
+                SIGNAL(triggered()),
+                qApp,
+                SLOT(quit()));
 
     QObject::connect(
-        ui->actionSobre,
-        SIGNAL(triggered()),
-        this,
-        SLOT(mostrarSobre()));
+                ui->actionSobre,
+                SIGNAL(triggered()),
+                this,
+                SLOT(mostrarSobre()));
+    QObject::connect(
+                ui->actionNovo,
+                SIGNAL(triggered()),
+                this,
+                SLOT(JogoNovo()));
 
     QObject::connect(
-        this,
-        SIGNAL(gameOver()),
-        this,
-        SLOT(mostrarFimJogo()));
+                this,
+                SIGNAL(gameOver()),
+                this,
+                SLOT(mostrarFimJogo()));
 
     this->adjustSize();
     this->setFixedSize(this->size());
@@ -80,98 +85,111 @@ RestaUm::~RestaUm() {
 
 void RestaUm::play() {
     Peca* peca = qobject_cast<Peca*>(
-                QObject::sender());    
+                QObject::sender());
     int r = peca->getX();
     int c = peca->getY();
     static int estado = 1;
 
     switch(estado){
-        case 1:
-            minha_lista.clear();
-            srMoves(r, c);
+    case 1:
+        minha_lista.clear();
+        srMoves(r, c);
 
-            if(minha_lista.size() == 1){
-                exMoves(r, c, minha_lista.front()->getX(), minha_lista.front()->getY());
+        if(minha_lista.size() == 1){
+            exMoves(r, c, minha_lista.front()->getX(), minha_lista.front()->getY());
+            nPecas--;
+            atualizarStatusBar();
+        }
+        else if(minha_lista.size() > 1) {
+            this->newPeca = peca;
+            newPeca->setState(Peca::Selected);
+            foreach (Peca *p, minha_lista) {
+                p->setState(Peca::Jumpable);
+            }
+
+            estado = 2;
+        }
+        break;
+
+    case 2:
+        if(peca->getState() != Peca::Selected && peca->getState() != Peca::Filled && peca->getState() != Peca::Empty) {
+            if(minha_lista.contains(peca)) {
+                exMoves(newPeca->getX(), newPeca->getY(), peca->getX(), peca->getY());
                 nPecas--;
-                atualizarStatusBar();
             }
-            else if(minha_lista.size() > 1) {
-                this->newPeca = peca;
-                newPeca->setState(Peca::Selected);
-                foreach (Peca *p, minha_lista) {
-                    p->setState(Peca::Jumpable);
+
+            foreach (Peca *p, minha_lista) {
+                if(p->getState() == Peca::Jumpable){
+                    p->setState(Peca::Empty);
                 }
 
-                estado = 2;
             }
-            break;
+            estado = 1;
+        }
+        break;
 
-        case 2:
+    default:
+        break;
+    }
 
-                if(minha_lista.contains(peca)) {
-                    exMoves(newPeca->getX(), newPeca->getY(), peca->getX(), peca->getY());
-                    nPecas--;
-                }
-
-                foreach (Peca *p, minha_lista) {
-                    if(p->getState() == Peca::Jumpable){
-                        p->setState(Peca::Empty);
-                    }
-
-                }
-                   estado = 1;
-            break;
-
-        default:
-            break;
+    if(estado == 1 && !verificaSeHaJogadas() && nPecas != 1) {
+        emit gameOver();
     }
 
 }
 
 void RestaUm::srMoves(int r, int c){
-    if((r-2) >= 0 && m_pecas[r-1][c] && m_pecas[r-2][c]
-            && m_pecas[r-1][c]->getState() == Peca::Filled
-            && m_pecas[r-2][c]->getState() == Peca::Empty){
-        minha_lista << m_pecas[r-2][c];
-    }
+    if(m_pecas[r][c]) {
+        if((r-2) >= 0 && m_pecas[r-1][c] && m_pecas[r-2][c]
+                && m_pecas[r-1][c]->getState() == Peca::Filled
+                && m_pecas[r-2][c]->getState() == Peca::Empty && m_pecas[r][c]->getState() == Peca::Filled){
+            minha_lista << m_pecas[r-2][c];
+        }
 
-    if((r+2) <= 6 && m_pecas[r+1][c] && m_pecas[r+2][c]
-            && m_pecas[r+1][c]->getState() == Peca::Filled
-            && m_pecas[r+2][c]->getState() == Peca::Empty){
-        minha_lista << m_pecas[r+2][c];
-    }
+        if((r+2) <= 6 && m_pecas[r+1][c] && m_pecas[r+2][c]
+                && m_pecas[r+1][c]->getState() == Peca::Filled
+                && m_pecas[r+2][c]->getState() == Peca::Empty && m_pecas[r][c]->getState() == Peca::Filled){
+            minha_lista << m_pecas[r+2][c];
+        }
 
-    if((c-2) >= 0 && m_pecas[r][c-1] && m_pecas[r][c-2]
-            && m_pecas[r][c-1]->getState() == Peca::Filled
-            && m_pecas[r][c-2]->getState() == Peca::Empty){
-        minha_lista << m_pecas[r][c-2];
-    }
+        if((c-2) >= 0 && m_pecas[r][c-1] && m_pecas[r][c-2]
+                && m_pecas[r][c-1]->getState() == Peca::Filled
+                && m_pecas[r][c-2]->getState() == Peca::Empty && m_pecas[r][c]->getState() == Peca::Filled){
+            minha_lista << m_pecas[r][c-2];
+        }
 
-    if((c+2) <= 6 && m_pecas[r][c+1] && m_pecas[r][c+2]
-            && m_pecas[r][c+1]->getState() == Peca::Filled
-            && m_pecas[r][c+2]->getState() == Peca::Empty){
-        minha_lista << m_pecas[r][c+2];
+        if((c+2) <= 6 && m_pecas[r][c+1] && m_pecas[r][c+2]
+                && m_pecas[r][c+1]->getState() == Peca::Filled
+                && m_pecas[r][c+2]->getState() == Peca::Empty && m_pecas[r][c]->getState() == Peca::Filled){
+            minha_lista << m_pecas[r][c+2];
+        }
     }
 
 }
 
 void RestaUm::exMoves(int rp, int cp, int rl, int cl){
-        m_pecas[rl][cl]->setState(Peca::Filled);
-        m_pecas[(rl+rp)/2][(cl+cp)/2]->setState(Peca::Empty);
-        m_pecas[rp][cp]->setState(Peca::Empty);
+    m_pecas[rl][cl]->setState(Peca::Filled);
+    m_pecas[(rl+rp)/2][(cl+cp)/2]->setState(Peca::Empty);
+    m_pecas[rp][cp]->setState(Peca::Empty);
 
 }
 
 void RestaUm::mostrarSobre() {
     QMessageBox::information(this,
-       tr("Sobre"),
-       tr("Resta Um\n\nAndrei Rimsa Alvares - andrei@decom.cefetmg.br"));
+                             tr("Sobre"),
+                             tr("Resta Um\n\nAndrei Rimsa Alvares - andrei@decom.cefetmg.br"));
 }
 
 void RestaUm::mostrarFimJogo() {
-    QMessageBox::information(this,
-       tr("Fim"),
-       tr("Parabéns, você venceu!"));
+    if(nPecas != 1)
+        QMessageBox::information(this,
+                                 tr("Fim"),
+                                 tr("Você perdeu, otário!"));
+    else {
+        QMessageBox::information(this,
+                                 tr("Fim"),
+                                 tr("Parabéns, você ganhou!"));
+    }
 }
 
 
@@ -214,62 +232,62 @@ void RestaUm::trocarModo(QAction* modo) {
 
 void RestaUm::Cruz(){
     nPecas = 6;
-        for (int r = 0; r < 7; r++) {
-            for (int c = 0; c < 7; c++) {
-                if(m_pecas[r][c])
+    for (int r = 0; r < 7; r++) {
+        for (int c = 0; c < 7; c++) {
+            if(m_pecas[r][c])
                 m_pecas[r][c]->setState(Peca::Empty);
-            }
         }
+    }
 
-        m_pecas[1][3]->setState(Peca::Filled);
-        m_pecas[2][3]->setState(Peca::Filled);
-        m_pecas[3][3]->setState(Peca::Filled);
-        m_pecas[4][3]->setState(Peca::Filled);
-        m_pecas[2][2]->setState(Peca::Filled);
-        m_pecas[2][4]->setState(Peca::Filled);
+    m_pecas[1][3]->setState(Peca::Filled);
+    m_pecas[2][3]->setState(Peca::Filled);
+    m_pecas[3][3]->setState(Peca::Filled);
+    m_pecas[4][3]->setState(Peca::Filled);
+    m_pecas[2][2]->setState(Peca::Filled);
+    m_pecas[2][4]->setState(Peca::Filled);
 }
 
 void RestaUm::Mais(){
     nPecas = 9;
-        for (int r = 0; r < 7; r++) {
-            for (int c = 0; c < 7; c++) {
-                if(m_pecas[r][c])
+    for (int r = 0; r < 7; r++) {
+        for (int c = 0; c < 7; c++) {
+            if(m_pecas[r][c])
                 m_pecas[r][c]->setState(Peca::Empty);
-            }
         }
+    }
 
-        m_pecas[1][3]->setState(Peca::Filled);
-        m_pecas[2][3]->setState(Peca::Filled);
-        m_pecas[3][1]->setState(Peca::Filled);
-        m_pecas[3][2]->setState(Peca::Filled);
-        m_pecas[3][3]->setState(Peca::Filled);
-        m_pecas[3][4]->setState(Peca::Filled);
-        m_pecas[3][5]->setState(Peca::Filled);
-        m_pecas[4][3]->setState(Peca::Filled);
-        m_pecas[5][3]->setState(Peca::Filled);
+    m_pecas[1][3]->setState(Peca::Filled);
+    m_pecas[2][3]->setState(Peca::Filled);
+    m_pecas[3][1]->setState(Peca::Filled);
+    m_pecas[3][2]->setState(Peca::Filled);
+    m_pecas[3][3]->setState(Peca::Filled);
+    m_pecas[3][4]->setState(Peca::Filled);
+    m_pecas[3][5]->setState(Peca::Filled);
+    m_pecas[4][3]->setState(Peca::Filled);
+    m_pecas[5][3]->setState(Peca::Filled);
 
 }
 
 void RestaUm::Banquinho(){
     nPecas = 11;
-        for (int r = 0; r < 7; r++) {
-            for (int c = 0; c < 7; c++) {
-                if(m_pecas[r][c])
+    for (int r = 0; r < 7; r++) {
+        for (int c = 0; c < 7; c++) {
+            if(m_pecas[r][c])
                 m_pecas[r][c]->setState(Peca::Empty);
-            }
         }
+    }
 
-        m_pecas[0][2]->setState(Peca::Filled);
-        m_pecas[0][3]->setState(Peca::Filled);
-        m_pecas[0][4]->setState(Peca::Filled);
-        m_pecas[1][2]->setState(Peca::Filled);
-        m_pecas[1][3]->setState(Peca::Filled);
-        m_pecas[1][4]->setState(Peca::Filled);
-        m_pecas[2][2]->setState(Peca::Filled);
-        m_pecas[2][3]->setState(Peca::Filled);
-        m_pecas[2][4]->setState(Peca::Filled);
-        m_pecas[3][2]->setState(Peca::Filled);
-        m_pecas[3][4]->setState(Peca::Filled);
+    m_pecas[0][2]->setState(Peca::Filled);
+    m_pecas[0][3]->setState(Peca::Filled);
+    m_pecas[0][4]->setState(Peca::Filled);
+    m_pecas[1][2]->setState(Peca::Filled);
+    m_pecas[1][3]->setState(Peca::Filled);
+    m_pecas[1][4]->setState(Peca::Filled);
+    m_pecas[2][2]->setState(Peca::Filled);
+    m_pecas[2][3]->setState(Peca::Filled);
+    m_pecas[2][4]->setState(Peca::Filled);
+    m_pecas[3][2]->setState(Peca::Filled);
+    m_pecas[3][4]->setState(Peca::Filled);
 }
 
 void RestaUm::Flecha() {
@@ -277,7 +295,7 @@ void RestaUm::Flecha() {
     for (int r = 0; r < 7; r++) {
         for (int c = 0; c < 7; c++) {
             if(m_pecas[r][c])
-            m_pecas[r][c]->setState(Peca::Empty);
+                m_pecas[r][c]->setState(Peca::Empty);
         }
     }
 
@@ -306,7 +324,7 @@ void RestaUm::Piramide() {
     for (int r = 0; r < 7; r++) {
         for (int c = 0; c < 7; c++) {
             if(m_pecas[r][c])
-            m_pecas[r][c]->setState(Peca::Empty);
+                m_pecas[r][c]->setState(Peca::Empty);
         }
     }
     m_pecas[1][3]->setState(Peca::Filled);
@@ -334,7 +352,7 @@ void RestaUm::Losango() {
     for (int r = 0; r < 7; r++) {
         for (int c = 0; c < 7; c++) {
             if(m_pecas[r][c])
-            m_pecas[r][c]->setState(Peca::Empty);
+                m_pecas[r][c]->setState(Peca::Empty);
         }
     }
     m_pecas[0][3]->setState(Peca::Filled);
@@ -368,7 +386,7 @@ void RestaUm::Tradicional() {
     for (int r = 0; r < 7; r++) {
         for (int c = 0; c < 7; c++) {
             if(m_pecas[r][c])
-            m_pecas[r][c]->setState(Peca::Filled);
+                m_pecas[r][c]->setState(Peca::Filled);
         }
     }
     m_pecas[3][3]->setState(Peca::Empty);
@@ -385,4 +403,55 @@ void RestaUm::setNpecas(int nPecas) {
 void RestaUm::atualizarStatusBar(){
     ui->statusBar->showMessage("Peças Remanescentes: " + QString::number(getNpecas()));
 
+}
+
+void RestaUm::JogoNovo() {
+    if (ui->actionTradicional->isChecked())
+        Tradicional();
+    else if (ui->actionCruz->isChecked())
+        Cruz();
+    else if (ui->actionMais->isChecked())
+        Mais();
+    else if (ui->actionBanquinho->isChecked())
+        Banquinho();
+    else if (ui->actionFlecha->isChecked())
+        Flecha();
+    else if (ui->actionPiramide->isChecked())
+        Piramide();
+    else if (ui->actionLosango->isChecked())
+        Losango();
+    atualizarStatusBar();
+}
+
+bool RestaUm::verificaSeHaJogadas() {
+    for (int r = 0; r < 7; r++) {
+        for (int c = 0; c < 7; c++) {
+            if(m_pecas[r][c]) {
+                if((r-2) >= 0 && m_pecas[r-1][c] && m_pecas[r-2][c]
+                        && m_pecas[r-1][c]->getState() == Peca::Filled
+                        && m_pecas[r-2][c]->getState() == Peca::Empty && m_pecas[r][c]->getState() == Peca::Filled){
+                    return true;
+                }
+
+                if((r+2) <= 6 && m_pecas[r+1][c] && m_pecas[r+2][c]
+                        && m_pecas[r+1][c]->getState() == Peca::Filled
+                        && m_pecas[r+2][c]->getState() == Peca::Empty && m_pecas[r][c]->getState() == Peca::Filled){
+                    return true;
+                }
+
+                if((c-2) >= 0 && m_pecas[r][c-1] && m_pecas[r][c-2]
+                        && m_pecas[r][c-1]->getState() == Peca::Filled
+                        && m_pecas[r][c-2]->getState() == Peca::Empty && m_pecas[r][c]->getState() == Peca::Filled){
+                    return true;
+                }
+
+                if((c+2) <= 6 && m_pecas[r][c+1] && m_pecas[r][c+2]
+                        && m_pecas[r][c+1]->getState() == Peca::Filled
+                        && m_pecas[r][c+2]->getState() == Peca::Empty && m_pecas[r][c]->getState() == Peca::Filled){
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
