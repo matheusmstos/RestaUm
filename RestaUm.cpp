@@ -192,6 +192,7 @@ void RestaUm::mostrarFimJogo() {
                                  tr("Fim"),
                                  tr("Parabéns, você ganhou!"));
     }
+    JogoNovo();
 }
 
 
