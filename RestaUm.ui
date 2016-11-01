@@ -6,14 +6,17 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>199</width>
-    <height>242</height>
+    <width>229</width>
+    <height>271</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>RestaUm</string>
   </property>
   <widget class="QWidget" name="centralWidget">
+   <property name="styleSheet">
+    <string notr="true">background-color: white;</string>
+   </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="5" column="3">
      <widget class="Peca" name="peca53">
@@ -847,8 +850,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>199</width>
-     <height>22</height>
+     <width>229</width>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuArquivo">
@@ -876,14 +879,26 @@
     </property>
     <addaction name="actionSobre"/>
    </widget>
+   <widget class="QMenu" name="menuSecreto">
+    <property name="title">
+     <string>Secreto</string>
+    </property>
+    <addaction name="actionModo_Nyan"/>
+    <addaction name="actionPontos_Extras"/>
+    <addaction name="actionNao_Clique_Aqui"/>
+   </widget>
    <addaction name="menuArquivo"/>
    <addaction name="menuModo"/>
+   <addaction name="menuSecreto"/>
    <addaction name="menuAjuda"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNovo">
    <property name="text">
     <string>Novo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
   <action name="actionSair">
@@ -953,6 +968,21 @@
   <action name="actionSobre">
    <property name="text">
     <string>Sobre</string>
+   </property>
+  </action>
+  <action name="actionModo_Nyan">
+   <property name="text">
+    <string>Modo Nyan</string>
+   </property>
+  </action>
+  <action name="actionPontos_Extras">
+   <property name="text">
+    <string>Pontos Extras</string>
+   </property>
+  </action>
+  <action name="actionNao_Clique_Aqui">
+   <property name="text">
+    <string>Nao Clique Aqui</string>
    </property>
   </action>
  </widget>

@@ -16,7 +16,6 @@ public:
     ~RestaUm();
     void srMoves(int r, int c);
     void exMoves(int rp, int cp, int rl, int cl);
-    QList<Peca*> minha_lista;
     void Cruz();
     void Mais();
     void Banquinho();
@@ -32,8 +31,10 @@ private:
     Ui::RestaUm *ui;
     Peca* m_pecas[7][7];
     Peca* newPeca;
+    int m_estado;
     int nPecas;
     int nyanAtivado;
+    QList<Peca*> minha_lista;
 
 private slots:
     void play();

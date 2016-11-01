@@ -26,6 +26,8 @@ RestaUm::RestaUm(QWidget *parent) :
     group->addAction(ui->actionPiramide);
     group->addAction(ui->actionLosango);
 
+    m_estado = 1;
+
     nyanAtivado = 0;
     nPecas = 32;
     for (int r = 0; r < 7; r++) {
@@ -75,12 +77,12 @@ RestaUm::RestaUm(QWidget *parent) :
                 this,
                 SLOT(JogoNovo()));
     QObject::connect(
-                ui->actionNyan,
+                ui->actionModo_Nyan,
                 SIGNAL(triggered()),
                 this,
                 SLOT(playNyan()));
     QObject::connect(
-                ui->actionPontosExtras,
+                ui->actionPontos_Extras,
                 SIGNAL(triggered()),
                 this,
                 SLOT(pontosExtras()));
@@ -110,9 +112,8 @@ void RestaUm::play() {
                 QObject::sender());
     int r = peca->getX();
     int c = peca->getY();
-    static int estado = 1;
 
-    switch(estado){
+    switch(m_estado){
     case 1:
         minha_lista.clear();
         srMoves(r, c);
@@ -134,7 +135,7 @@ void RestaUm::play() {
                 }
             }
 
-            estado = 2;
+            m_estado = 2;
         }
         break;
 
@@ -154,7 +155,7 @@ void RestaUm::play() {
                 }
 
             }
-            estado = 1;
+            m_estado = 1;
         }
         break;
 
@@ -164,7 +165,7 @@ void RestaUm::play() {
 
     atualizarStatusBar();
 
-    if(estado == 1 && !verificaSeHaJogadas()) {
+    if(m_estado == 1 && !verificaSeHaJogadas()) {
         emit gameOver();
     }
 
@@ -543,6 +544,10 @@ void RestaUm::atualizarStatusBar(){
 }
 
 void RestaUm::JogoNovo() {
+    newPeca = 0;
+    minha_lista.clear();
+    m_estado = 1;
+
     nyanAtivado = 0;
     if (ui->actionTradicional->isChecked())
         Tradicional();
