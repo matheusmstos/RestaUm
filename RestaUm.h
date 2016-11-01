@@ -18,7 +18,13 @@ public:
     void exMoves(int rp, int cp, int rl, int cl);
     QList<Peca*> minha_lista;
     void Cruz();
-
+    void Mais();
+    void Banquinho();
+    void Flecha();
+    void Piramide();
+    void Losango();
+    void Tradicional();
+    void atualizarStatusBar();
 
 signals:
     void gameOver();
