@@ -77,12 +77,12 @@ RestaUm::RestaUm(QWidget *parent) :
                 this,
                 SLOT(JogoNovo()));
     QObject::connect(
-                ui->actionNyan,
+                ui->actionModo_Nyan,
                 SIGNAL(triggered()),
                 this,
                 SLOT(playNyan()));
     QObject::connect(
-                ui->actionPontosExtras,
+                ui->actionPontos_Extras,
                 SIGNAL(triggered()),
                 this,
                 SLOT(pontosExtras()));
